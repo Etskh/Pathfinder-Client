@@ -5,6 +5,46 @@ import json
 from core import Model, Collection
 
 
+class SizeModel(Model):
+
+    def __init__(self, index, name):
+        self.index = index
+        self.name = name
+        # prop self.acBonus
+        # prop self.attackBonus
+
+    @property
+    def attackBonus(self):
+        return self.acBonus
+
+    @property
+    def acBonus(self):
+        if self.index - 4 == 0:
+            return 0
+        return 2 ** (abs(self.index-4)-1) * (-1 if self.index < 4 else 1)
+
+    @property
+    def hideBonus(self):
+        self.acBonus * 4
+
+    def getLightest(self):
+        return 8.0 ** (self.index - 2.0)
+
+    def getHeaviest(self):
+        return self.getLightest() * 8.0
+
+    def getWeightRatio(self, otherSize):
+        return (self.getHeaviest() - self.getLightest()) / (otherSize.getHeaviest() - otherSize.getLightest())
+
+
+class RaceModel(Model):
+
+    name = 'race'
+
+    def __init__(self):
+        self.size = SizeModel()
+
+
 class SpellModel(Model):
     def __init__(self, data):
         self.name = data['name']
@@ -50,6 +90,9 @@ class SpellModel(Model):
     }]
 
 
+
+
+
 class ClassLevelModel(Model):
     name = 'class-level'
 
@@ -73,6 +116,8 @@ class ClassModel(Model):
 
     def atLevel(self, level):
         return self.levels.getByField('level', level)
+
+
 
 
 
@@ -238,3 +283,6 @@ class CharacterModel(Model):
             lambda spell: spell.levels['wizard'] == 1 and spell.school == 'illusion',
         ),
     ]
+
+
+
