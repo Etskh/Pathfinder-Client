@@ -2,8 +2,6 @@
 
 import kivy
 
-from kivy.animation import Animation
-
 from kivy.app import App
 
 from kivy.uix.gridlayout import GridLayout
@@ -13,35 +11,81 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 
 
 from core import CannedDataSource
-from models import CharacterModel, ClassModel
+from models import CharacterModel
 
 # set the minimum Kivy version
 kivy.require('1.7.0')
 
 
-class CharacterDetailView(GridLayout, Screen):
 
-    title = 'Character Detail'
+#
+# TODO: Move this to controller_core.py or something
+#
 
-    def __init__(self, character, callback, back_callback, **kwargs):
-        kwargs['name'] = CharacterDetailView.title
-        super(CharacterDetailView, self).__init__(**kwargs)
+class CharacterScreenChanger(GridLayout):
+
+    def __init__(self, screen_class, page_callback, **kwargs):
+        super(CharacterScreenChanger, self).__init__(**kwargs)
+
+        self.cols = 2
+        self.screen_class = screen_class
+        self.page_callback = page_callback
+
+        self.add_widget(Label(text=screen_class.title))
+        btn = Button(text='>')
+        btn.bind(on_touch_down=self.goto_screen)
+        self.add_widget(btn)
+
+    def goto_screen(self, instance, mouse_event):
+        self.page_callback(self.screen_class)
+
+
+
+
+
+
+
+#
+# TODO: Move These 2 classes to their own file
+#
+
+class SpellsKnownListItemView(GridLayout):
+
+    def __init__(self, spell, **kwargs):
+        super(SpellsKnownListItemView, self).__init__(**kwargs)
+
+        self.cols = 1
+
+        self.add_widget(Label(text='Message'))
+
+
+class SpellsKnownListView(GridLayout, Screen):
+
+    title = 'Spells Known'
+
+    def __init__(self, character, dataSource, **kwargs):
+        kwargs['name'] = self.__class__.title
+        super(SpellsKnownListView, self).__init__(**kwargs)
+
+        self.cols = 1
+
+        self.add_widget(SpellsKnownListItemView(spell=None))
+
+
+
+
+
+
+
+class CharacterDetailInfoView(GridLayout):
+
+    def __init__(self, character, **kwargs):
+        super(CharacterDetailInfoView, self).__init__(**kwargs)
 
         self.cols = 3
-
         self.character = character
-        self.callback = callback
-        self.back_callback = back_callback
-
-        # TODO: Add the name and stuff as widgets
-        # TODO: Add the long buttons for different sections
-        # TODO: First, add the spells known button
-        self.spellsKnown = 0
 
         self.init_widgets()
-
-        # TEST
-        # self.select_page(CharacterSpellsKnownView)
 
     def init_widgets(self):
         self.add_widget(Label(text=self.character.name))
@@ -49,23 +93,37 @@ class CharacterDetailView(GridLayout, Screen):
         self.add_widget(Label(text=self.character.race))
 
 
-    def select_page(self, page):
-        self.callback(page)
+class CharacterDetailView(GridLayout, Screen):
 
+    title = 'Character Detail'
 
-class CharacterListView(Screen):
-
-    title = 'Character List View'
-
-    def __init__(self, character_list, callback, **kwargs):
-        kwargs['name'] = CharacterListView.title
-        super(CharacterListView, self).__init__(**kwargs)
+    def __init__(self, character, callback, page_callback, **kwargs):
+        kwargs['name'] = self.__class__.title
+        super(CharacterDetailView, self).__init__(**kwargs)
 
         self.cols = 1
-        self.callback = callback
 
-        for character in character_list:
-            self.add_widget(CharacterListItemView(character, callback))
+        self.character = character
+        self.callback = callback
+        self.page_callback = page_callback
+
+        self.init_widgets()
+
+    def init_widgets(self):
+        self.add_widget(CharacterDetailInfoView(self.character))
+        self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
+
+
+
+
+
+
+
+
+#
+# TODO: Move this to its own view file thing
+#
+
 
 
 class CharacterListItemView(GridLayout):
@@ -87,13 +145,35 @@ class CharacterListItemView(GridLayout):
         self.callback(self.character_model)
 
 
-class PathfinderWidget(ScreenManager):
+class CharacterListView(Screen):
+
+    title = 'Character List View'
+
+    def __init__(self, character_list, callback, **kwargs):
+        kwargs['name'] = self.__class__.title
+        super(CharacterListView, self).__init__(**kwargs)
+
+        self.cols = 1
+        self.callback = callback
+
+        for character in character_list:
+            self.add_widget(CharacterListItemView(character, callback))
+
+
+
+
+
+
+
+
+
+class PathfinderScreenManager(ScreenManager):
 
     def __init__(self, **kwargs):
-        super(PathfinderWidget, self).__init__(**kwargs)
+        super(PathfinderScreenManager, self).__init__(**kwargs)
 
-        data_source = CannedDataSource()
-        characters = data_source.get(CharacterModel)
+        self.data_source = CannedDataSource()
+        characters = self.data_source.get(CharacterModel)
 
         self.selected_character = None
         self.detail_view = None
@@ -104,26 +184,30 @@ class PathfinderWidget(ScreenManager):
     def set_character(self, character=None):
         self.selected_character = character
         if self.selected_character:
-            self.detail_view = CharacterDetailView(character, self.set_screen, self.set_character)
+            # TODO: Go through all the children and delete CharacterDetailView
+            self.detail_view = CharacterDetailView(character, self.set_character, self.set_screen)
             self.add_widget(self.detail_view)
             self.current = CharacterDetailView.title
         else:
-            # TODO: Go back to the list of characters
-            print('TODO: Go back to the list of characters')
-        print("setting the character")
+            print 'going to the next one'
+            self.current = CharacterListView.title
 
     def set_screen(self, cls):
         # TODO: Going to the screen cls
-        print("Going to the screen " + cls)
+        new_screen = cls(self.selected_character, self.data_source)
+        self.add_widget(new_screen)
+
+        self.current = cls.title
 
 
-pfw = PathfinderWidget()
+
+pfsm = PathfinderScreenManager()
 
 
 class PathfinderAppView(App):
 
     def build(self):
-        return pfw
+        return pfsm
 
 
 if __name__ == '__main__':
