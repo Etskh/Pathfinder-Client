@@ -76,6 +76,11 @@ class SpellsKnownListView(GridLayout, Screen):
 
 
 
+#
+# TODO: Move this to its own thingie
+#
+
+
 
 class CharacterDetailInfoView(GridLayout):
 
@@ -163,6 +168,15 @@ class CharacterListView(Screen):
 
 
 
+
+
+class HamburgerMenuView(GridLayout):
+    def __init__(self, **kwargs):
+        super(HamburgerMenuView, self).__init__(**kwargs)
+
+        self.cols = 1
+
+        self.add_widget(Label(text='HAMBURGER'))
 
 
 
