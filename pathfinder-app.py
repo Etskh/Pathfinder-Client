@@ -38,6 +38,7 @@ class CharacterScreenChanger(GridLayout):
 
     def goto_screen(self, instance, mouse_event):
         self.page_callback(self.screen_class)
+        return True
 
 
 
@@ -148,6 +149,7 @@ class CharacterListItemView(GridLayout):
 
     def open_character(self, instance, mouse_motion_event):
         self.callback(self.character_model)
+        return True
 
 
 class CharacterListView(Screen):
@@ -168,15 +170,6 @@ class CharacterListView(Screen):
 
 
 
-
-
-class HamburgerMenuView(GridLayout):
-    def __init__(self, **kwargs):
-        super(HamburgerMenuView, self).__init__(**kwargs)
-
-        self.cols = 1
-
-        self.add_widget(Label(text='HAMBURGER'))
 
 
 
@@ -214,14 +207,47 @@ class PathfinderScreenManager(ScreenManager):
         self.current = cls.title
 
 
+class HamburgerMenuView(GridLayout):
+    def __init__(self, return_callback, **kwargs):
+        super(HamburgerMenuView, self).__init__(**kwargs)
 
-pfsm = PathfinderScreenManager()
+        self.cols = 3
+        self.return_callback = return_callback
+
+        btn = Button(text='<')
+        #btn.bind(on_touch_down=self.return_callback)
+        self.add_widget(btn)
+
+        self.add_widget(Label(text='HAMBURGER'))
+        self.add_widget(Label(text='='))
+
+
+
+
+
+
+class PathFinderWidget(GridLayout):
+    def __init__(self, **kwargs):
+        super(PathFinderWidget, self).__init__(**kwargs)
+
+        self.cols = 1
+        self.pfsm = PathfinderScreenManager()
+
+        self.add_widget(HamburgerMenuView(self.return_callback))
+        self.add_widget(self.pfsm)
+
+    def return_callback(self, instance, mouse_movement):
+        print('Returning callback')
+        return True
+
+
+
 
 
 class PathfinderAppView(App):
 
     def build(self):
-        return pfsm
+        return PathFinderWidget()
 
 
 if __name__ == '__main__':
