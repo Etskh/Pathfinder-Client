@@ -32,12 +32,13 @@ class CharacterScreenChanger(GridLayout):
         self.page_callback = page_callback
 
         self.add_widget(Label(text=screen_class.title))
-        btn = Button(text='>')
-        btn.bind(on_touch_down=self.goto_screen)
-        self.add_widget(btn)
+        self.btn = Button(text='>')
+        self.btn.bind(on_press=self.goto_screen)
+        self.add_widget(self.btn)
 
-    def goto_screen(self, instance, mouse_event):
-        self.page_callback(self.screen_class)
+    def goto_screen(self, instance ):
+        if instance == self.btn:
+            self.page_callback(self.screen_class)
         return True
 
 
@@ -77,16 +78,34 @@ class SpellsKnownListView(GridLayout, Screen):
 
 
 
+
+
+#
+# DailySpellsView
+#
+
+
+class DailySpellsView(GridLayout, Screen):
+    title = 'Daily Spells'
+
+    def __init__(self, character, dataSource, **kwargs):
+        kwargs['name'] = self.__class__.title
+        super(DailySpellsView, self).__init__(**kwargs)
+
+        self.cols = 1
+
+        self.add_widget(Label(text='Daily Spalls'))
+
+
 #
 # TODO: Move this to its own thingie
 #
 
 
-
-class CharacterDetailInfoView(GridLayout):
+class CharacterStatsView(GridLayout):
 
     def __init__(self, character, **kwargs):
-        super(CharacterDetailInfoView, self).__init__(**kwargs)
+        super(CharacterStatsView, self).__init__(**kwargs)
 
         self.cols = 3
         self.character = character
@@ -94,9 +113,34 @@ class CharacterDetailInfoView(GridLayout):
         self.init_widgets()
 
     def init_widgets(self):
-        self.add_widget(Label(text=self.character.name))
+        stats = [
+            'str', 'dex', 'con', 'int', 'wis', 'cha'
+        ]
+        for stat in stats:
+            self.add_widget(Label(text=stat))
+            self.add_widget(Label(text=str(self.character.stats[stat])))
+            mod = str(self.character.mod(stat))
+            if mod[0] != '-':
+                mod = '+' + mod
+            self.add_widget(Label(text=mod))
+
+
+class CharacterDetailInfoView(GridLayout):
+
+    def __init__(self, character, **kwargs):
+        super(CharacterDetailInfoView, self).__init__(**kwargs)
+
+        self.cols = 4
+        self.character = character
+
+        self.init_widgets()
+
+    def init_widgets(self):
+        self.add_widget(Label(text=self.character.name, font_size=24))
         self.add_widget(Label(text=self.character.get_level_as_string()))
         self.add_widget(Label(text=self.character.race))
+
+        self.add_widget(CharacterStatsView(self.character))
 
 
 class CharacterDetailView(GridLayout, Screen):
@@ -118,6 +162,7 @@ class CharacterDetailView(GridLayout, Screen):
     def init_widgets(self):
         self.add_widget(CharacterDetailInfoView(self.character))
         self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
+        self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
 
 
 
@@ -137,19 +182,23 @@ class CharacterListItemView(GridLayout):
     def __init__(self, character_model, callback, **kwargs):
         super(CharacterListItemView, self).__init__(**kwargs)
         self.cols = 4
-        self.character_model = character_model
+        self.character = character_model
         self.callback = callback
 
-        self.add_widget(Label(text=character_model.name))
-        self.add_widget(Label(text=character_model.get_level_as_string()))
-        self.add_widget(Label(text=character_model.race))
+        self.init_widgets()
+
+    def init_widgets(self):
+
+        self.add_widget(Label(text=self.character.name))
+        self.add_widget(Label(text=self.character.get_level_as_string()))
+        self.add_widget(Label(text=self.character.race))
         btn = Button(text='>')
-        btn.bind(on_touch_down=self.open_character)
+        btn.bind(on_press=self.open_character)
         self.add_widget(btn)
 
-    def open_character(self, instance, mouse_motion_event):
-        self.callback(self.character_model)
-        return True
+    def open_character(self, instance):
+        self.callback(self.character)
+        return False
 
 
 class CharacterListView(Screen):
@@ -190,6 +239,7 @@ class PathfinderScreenManager(ScreenManager):
 
     def set_character(self, character=None):
         self.selected_character = character
+
         if self.selected_character:
             # TODO: Go through all the children and delete CharacterDetailView
             self.detail_view = CharacterDetailView(character, self.set_character, self.set_screen)
@@ -206,6 +256,11 @@ class PathfinderScreenManager(ScreenManager):
 
         self.current = cls.title
 
+    def goto_back(self):
+        print('Going back to the whatever')
+
+
+
 
 class HamburgerMenuView(GridLayout):
     def __init__(self, return_callback, **kwargs):
@@ -215,12 +270,11 @@ class HamburgerMenuView(GridLayout):
         self.return_callback = return_callback
 
         btn = Button(text='<')
-        #btn.bind(on_touch_down=self.return_callback)
+        btn.bind(on_press=self.return_callback)
         self.add_widget(btn)
 
         self.add_widget(Label(text='HAMBURGER'))
         self.add_widget(Label(text='='))
-
 
 
 
@@ -231,14 +285,15 @@ class PathFinderWidget(GridLayout):
         super(PathFinderWidget, self).__init__(**kwargs)
 
         self.cols = 1
-        self.pfsm = PathfinderScreenManager()
+        self.pathfinder_screen_manager = PathfinderScreenManager()
 
         self.add_widget(HamburgerMenuView(self.return_callback))
-        self.add_widget(self.pfsm)
+        self.add_widget(self.pathfinder_screen_manager)
 
-    def return_callback(self, instance, mouse_movement):
-        print('Returning callback')
-        return True
+    def return_callback(self, instance):
+        # Defer it to the screen manager
+        self.pathfinder_screen_manager.goto_back()
+
 
 
 
