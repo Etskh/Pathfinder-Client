@@ -34,7 +34,9 @@ class SizeModel(Model):
         return self.getLightest() * 8.0
 
     def getWeightRatio(self, otherSize):
-        return (self.getHeaviest() - self.getLightest()) / (otherSize.getHeaviest() - otherSize.getLightest())
+        this_delta = self.getHeaviest() - self.getLightest()
+        that_delta = otherSize.getHeaviest() - otherSize.getLightest()
+        return this_delta / that_delta
 
 
 class RaceModel(Model):
@@ -115,7 +117,7 @@ class ClassModel(Model):
         self.levels.load(data['levels'])
 
     def atLevel(self, level):
-        return self.levels.getByField('level', level)
+        return self.levels.get_by_field('level', level)
 
 
 
@@ -204,7 +206,7 @@ class CharacterModel(Model):
         val = 0
         for cls in self.levels:
             level = self.levels[cls]
-            classModel = CharacterModel.classCollection.getByField('name', cls)
+            classModel = CharacterModel.classCollection.get_by_field('name', cls)
             val += classModel.atLevel(level).__dict__[valueName]
         return val
 
