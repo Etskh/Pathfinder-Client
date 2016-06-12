@@ -1,0 +1,74 @@
+[{
+  "name": "Pig",
+  "str": 9,
+  "dex": 17,
+  "con": 12,
+  "int": 17,
+  "wis": 13,
+  "cha": 9,
+  "classes": {
+      "wizard": 3
+  },
+  "race": "goblin",
+  "school_specialization": "illusion",
+  "spells_known": [
+      "Silent Image",
+      "Daze"
+  ]
+}, {
+  "name": "Kazrah",
+  "str": 16,
+  "dex": 13,
+  "con": 12,
+  "int": 11,
+  "wis": 13,
+  "cha": 9,
+  "classes": {
+      "ranger": 3
+  },
+  "race": "half-orc",
+  "spells_known": [
+  ]
+}, {
+  "name": "Pinoa",
+  "str": 9,
+  "dex": 13,
+  "con": 11,
+  "int": 10,
+  "wis": 12,
+  "cha": 10,
+  "classes": {
+      "ranger": 3
+  },
+  "race": "gnome",
+  "spells_known": [
+  ]
+}, {
+  "name": "Ruglia",
+  "str": 9,
+  "dex": 13,
+  "con": 11,
+  "int": 10,
+  "wis": 12,
+  "cha": 10,
+  "classes": {
+      "druid": 3
+  },
+  "race": "dwarf",
+  "spells_known": [
+  ]
+}, {
+  "name": "Odarg",
+  "str": 18,
+  "dex": 14,
+  "con": 13,
+  "int": 8,
+  "wis": 12,
+  "cha": 6,
+  "classes": {
+      "barbarian": 3
+  },
+  "race": "half-orc",
+  "spells_known": [
+  ]
+}]

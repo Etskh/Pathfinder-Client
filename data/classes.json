@@ -1,0 +1,64 @@
+[{
+  "name": "barbarian",
+  "levels": [
+    {
+      "level": 1,
+      "baseAttack": 1,
+      "fortSave": 2,
+      "refSave": 0,
+      "willSave": 0
+    },
+    {
+      "level": 2,
+      "baseAttack": 2,
+      "fortSave": 3,
+      "refSave": 0,
+      "willSave": 0
+    },
+    {
+      "level": 3,
+      "baseAttack": 3,
+      "fortSave": 3,
+      "refSave": 1,
+      "willSave": 1
+    }
+  ]
+},{
+  "name": "wizard",
+  "levels": [
+    {
+      "level": 1,
+      "baseAttack": 0,
+      "fortSave": 0,
+      "refSave": 0,
+      "willSave": 2,
+      "spd": {
+        "0": 3,
+        "1": 1
+      }
+    },
+    {
+      "level": 2,
+      "baseAttack": 1,
+      "fortSave": 0,
+      "refSave": 0,
+      "willSave": 3,
+      "spd": {
+        "0": 4,
+        "1": 1
+      }
+    },
+    {
+      "level": 3,
+      "baseAttack": 1,
+      "fortSave": 1,
+      "refSave": 1,
+      "willSave": 3,
+      "spd": {
+        "0": 4,
+        "1": 1,
+        "2": 1
+      }
+    }
+  ]
+}]

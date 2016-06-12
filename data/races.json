@@ -1,0 +1,13 @@
+[{
+  "name": "dwarf",
+  "size": "medium"
+},{
+  "name": "half-orc",
+  "size": "medium"
+},{
+  "name": "goblin",
+  "size": "small"
+},{
+  "name": "gnome",
+  "size": "small"
+}]

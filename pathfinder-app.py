@@ -4,23 +4,23 @@ import kivy
 
 from kivy.app import App
 
+from kivy.uix.widget import Widget
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, FallOutTransition
 
 
 from core import CannedDataSource
 from models import CharacterModel
 
 # set the minimum Kivy version
-kivy.require('1.7.0')
-
-
+kivy.require('1.9.0')
 
 #
 # TODO: Move this to controller_core.py or something
 #
+
 
 class CharacterScreenChanger(GridLayout):
 
@@ -31,8 +31,8 @@ class CharacterScreenChanger(GridLayout):
         self.screen_class = screen_class
         self.page_callback = page_callback
 
-        self.add_widget(Label(text=screen_class.title))
-        self.btn = Button(text='>')
+        self.add_widget(Label(text=screen_class.title, size_hint_y=None, height=64))
+        self.btn = Button(text='>', size_hint_y=None, height=64)
         self.btn.bind(on_press=self.goto_screen)
         self.add_widget(self.btn)
 
@@ -201,7 +201,7 @@ class CharacterListItemView(GridLayout):
         return False
 
 
-class CharacterListView(Screen):
+class CharacterListView(GridLayout, Screen):
 
     title = 'Character List View'
 
@@ -226,6 +226,7 @@ class CharacterListView(Screen):
 class PathfinderScreenManager(ScreenManager):
 
     def __init__(self, **kwargs):
+        kwargs['transition'] = FallOutTransition()
         super(PathfinderScreenManager, self).__init__(**kwargs)
 
         self.data_source = CannedDataSource()
@@ -241,7 +242,11 @@ class PathfinderScreenManager(ScreenManager):
         self.selected_character = character
 
         if self.selected_character:
-            # TODO: Go through all the children and delete CharacterDetailView
+            try:
+                self.remove_widget(self.get_screen(CharacterDetailView.title))
+            except kivy.uix.screenmanager.ScreenManagerException:
+                pass
+                # It's all good -we just need to make sure there's only one
             self.detail_view = CharacterDetailView(character, self.set_character, self.set_screen)
             self.add_widget(self.detail_view)
             self.current = CharacterDetailView.title
@@ -250,15 +255,25 @@ class PathfinderScreenManager(ScreenManager):
             self.current = CharacterListView.title
 
     def set_screen(self, cls):
-        # TODO: Going to the screen cls
+
+        try:
+            self.remove_widget(self.get_screen(cls.title))
+        except kivy.uix.screenmanager.ScreenManagerException:
+            pass
+
         new_screen = cls(self.selected_character, self.data_source)
         self.add_widget(new_screen)
 
         self.current = cls.title
 
-    def goto_back(self):
-        print('Going back to the whatever')
-
+    #def previous(self):
+        #last_item = self.screen_names[-1]
+        #super(ScreenManager, self).previous()
+        #self.remove_widget(self.get_screen(last_item))
+        #try:
+        #    self.remove_widget(super(ScreenManager, self).previous())
+        #except kivy.uix.screenmanager.ScreenManagerException:
+        #    pass
 
 
 
@@ -269,12 +284,12 @@ class HamburgerMenuView(GridLayout):
         self.cols = 3
         self.return_callback = return_callback
 
-        btn = Button(text='<')
+        btn = Button(text='<', size_hint_x=None, width=64)
         btn.bind(on_press=self.return_callback)
         self.add_widget(btn)
 
-        self.add_widget(Label(text='HAMBURGER'))
-        self.add_widget(Label(text='='))
+        self.add_widget(Label(text='Visual Character'))
+        self.add_widget(Button(text='=', size_hint_x=None, width=64))
 
 
 
@@ -287,13 +302,12 @@ class PathFinderWidget(GridLayout):
         self.cols = 1
         self.pathfinder_screen_manager = PathfinderScreenManager()
 
-        self.add_widget(HamburgerMenuView(self.return_callback))
+        self.add_widget(HamburgerMenuView(self.return_callback, size_hint_y=None, height=64))
         self.add_widget(self.pathfinder_screen_manager)
 
     def return_callback(self, instance):
-        # Defer it to the screen manager
-        self.pathfinder_screen_manager.goto_back()
-
+        self.pathfinder_screen_manager.current = self.pathfinder_screen_manager.previous()
+        print( self.pathfinder_screen_manager.screen_names)
 
 
 

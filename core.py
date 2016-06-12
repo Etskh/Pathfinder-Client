@@ -3,6 +3,8 @@ This is the core library for the pathfinder app
  - put general solutions here
 """
 
+import json
+
 
 class Model(object):
     "Base class for all models"
@@ -51,7 +53,9 @@ class CannedDataSource(object):
         if model.name == 'class':
             collection.load(CannedDataSource._class_data)
         if model.name == 'character':
-            collection.load(CannedDataSource._character_data)
+            with open('data/characters.json') as data_file:
+                data = json.load(data_file)
+                collection.load(data)
         return collection
 
     _class_data = [{
@@ -92,23 +96,4 @@ class CannedDataSource(object):
                 },
             },
         ]
-    }]
-
-    _character_data = [{
-        'name': 'Pig',
-        'str': 9,
-        'dex': 17,
-        'con': 12,
-        'int': 17,
-        'wis': 13,
-        'cha': 9,
-        'classes': {
-            'wizard': 3,
-        },
-        'race': 'goblin',
-        'school_specialization': 'illusion',
-        'spells_known': [
-            'Silent Image',
-            'Daze',
-        ],
     }]

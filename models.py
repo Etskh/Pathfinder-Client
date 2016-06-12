@@ -7,36 +7,55 @@ from core import Model, Collection
 
 class SizeModel(Model):
 
-    def __init__(self, index, name):
-        self.index = index
+    # TODO: Turn the string-indexed indices into ACTUAL python objects
+
+    def __init__(self, name):
+        self.index = SizeModel._list[name]
         self.name = name
-        # prop self.acBonus
-        # prop self.attackBonus
+        # prop self.ac_bonus
+        # prop self.attack_bonus
+        # prop self.hide_bonus
+        # prop self.lightest
+        # prop self.heaviest
 
     @property
-    def attackBonus(self):
-        return self.acBonus
+    def attack_bonus(self):
+        return self.ac_bonus
 
     @property
-    def acBonus(self):
+    def ac_bonus(self):
         if self.index - 4 == 0:
             return 0
         return 2 ** (abs(self.index-4)-1) * (-1 if self.index < 4 else 1)
 
     @property
-    def hideBonus(self):
-        self.acBonus * 4
+    def hide_bonus(self):
+        self.ac_bonus * 4
 
-    def getLightest(self):
+    @property
+    def lightest(self):
         return 8.0 ** (self.index - 2.0)
 
-    def getHeaviest(self):
+    @property
+    def heaviest(self):
         return self.getLightest() * 8.0
 
-    def getWeightRatio(self, otherSize):
-        this_delta = self.getHeaviest() - self.getLightest()
-        that_delta = otherSize.getHeaviest() - otherSize.getLightest()
+    def compute_weight_ratio(self, other_size):
+        this_delta = self.heaviest - self.lightest
+        that_delta = other_size.heaviest - other_size.lightest
         return this_delta / that_delta
+
+    _list = {
+        'fine': -4,
+        'diminutive': -3,
+        'tiny': -2,
+        'small': -1,
+        'medium': 0,
+        'large': 1,
+        'huge': 2,
+        'gargantuan': 3,
+        'colossal': 4,
+    }
 
 
 class RaceModel(Model):
@@ -44,7 +63,7 @@ class RaceModel(Model):
     name = 'race'
 
     def __init__(self):
-        self.size = SizeModel()
+        self.size = SizeModel(0, 'medium')
 
 
 class SpellModel(Model):
@@ -157,10 +176,17 @@ class CharacterModel(Model):
             'cha': int(data['cha']),
         }
         self.race = data['race']
-        self.levels = {
-            'wizard': 2,
-        }
-        self.school_specialization = data['school_specialization']
+
+        # Now load in the classes
+        self.levels = {}
+        for cls in data['classes']:
+            self.levels[cls] = data['classes'][cls]
+
+        try:
+            self.school_specialization = data['school_specialization']
+        except KeyError:
+            self.school_specialization = None
+
         self.spells_known = data['spells_known']
         self.spells = []
 
