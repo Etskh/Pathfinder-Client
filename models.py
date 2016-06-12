@@ -2,7 +2,7 @@
 
 import json
 
-from core import Model, Collection
+from core import Model, Collection, CannedDataSource
 
 
 class SizeModel(Model):
@@ -62,8 +62,16 @@ class RaceModel(Model):
 
     name = 'race'
 
-    def __init__(self):
-        self.size = SizeModel(0, 'medium')
+    def __init__(self, data):
+        self.name = data['name']
+        self.size = SizeModel('medium')
+
+    def __str__(self):
+        return str(self.name)
+
+
+
+
 
 
 class SpellModel(Model):
@@ -114,6 +122,9 @@ class SpellModel(Model):
 
 
 
+
+
+
 class ClassLevelModel(Model):
     name = 'class-level'
 
@@ -123,6 +134,9 @@ class ClassLevelModel(Model):
         self.fortSave = data['fortSave']
         self.refSave = data['refSave']
         self.willSave = data['willSave']
+
+
+
 
 
 
@@ -137,6 +151,8 @@ class ClassModel(Model):
 
     def atLevel(self, level):
         return self.levels.get_by_field('level', level)
+
+
 
 
 
@@ -160,6 +176,9 @@ class SpellSlotModel(Model):
 
 
 
+
+
+
 class CharacterModel(Model):
 
     name = 'character'
@@ -175,7 +194,12 @@ class CharacterModel(Model):
             'wis': int(data['wis']),
             'cha': int(data['cha']),
         }
-        self.race = data['race']
+
+        # Now get the race from the data
+        game_data = CannedDataSource()
+
+        races = game_data.get(RaceModel)
+        self.race = races.get_by_field('name', data['race'])
 
         # Now load in the classes
         self.levels = {}

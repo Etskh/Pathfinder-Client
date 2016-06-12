@@ -14,7 +14,8 @@
   "spells_known": [
       "Silent Image",
       "Daze"
-  ]
+  ],
+  "exp": 0
 }, {
   "name": "Kazrah",
   "str": 16,
@@ -28,7 +29,8 @@
   },
   "race": "half-orc",
   "spells_known": [
-  ]
+  ],
+  "exp": 0
 }, {
   "name": "Pinoa",
   "str": 9,
@@ -42,7 +44,8 @@
   },
   "race": "gnome",
   "spells_known": [
-  ]
+  ],
+  "exp": 0
 }, {
   "name": "Ruglia",
   "str": 9,
@@ -56,7 +59,8 @@
   },
   "race": "dwarf",
   "spells_known": [
-  ]
+  ],
+  "exp": 0
 }, {
   "name": "Odarg",
   "str": 18,
@@ -70,5 +74,6 @@
   },
   "race": "half-orc",
   "spells_known": [
-  ]
+  ],
+  "exp": 0
 }]

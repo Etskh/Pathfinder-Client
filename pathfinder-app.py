@@ -138,7 +138,7 @@ class CharacterDetailInfoView(GridLayout):
     def init_widgets(self):
         self.add_widget(Label(text=self.character.name, font_size=24))
         self.add_widget(Label(text=self.character.get_level_as_string()))
-        self.add_widget(Label(text=self.character.race))
+        self.add_widget(Label(text=self.character.race.name))
 
         self.add_widget(CharacterStatsView(self.character))
 
@@ -191,7 +191,7 @@ class CharacterListItemView(GridLayout):
 
         self.add_widget(Label(text=self.character.name))
         self.add_widget(Label(text=self.character.get_level_as_string()))
-        self.add_widget(Label(text=self.character.race))
+        self.add_widget(Label(text=self.character.race.name))
         btn = Button(text='>')
         btn.bind(on_press=self.open_character)
         self.add_widget(btn)
