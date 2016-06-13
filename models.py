@@ -64,7 +64,7 @@ class RaceModel(Model):
 
     def __init__(self, data):
         self.name = data['name']
-        self.size = SizeModel('medium')
+        self.size = SizeModel( data['size'])
 
     def __str__(self):
         return str(self.name)
@@ -261,6 +261,10 @@ class CharacterModel(Model):
         return val
 
     @property
+    def size(self):
+        return self.race.size
+
+    @property
     def fortSave(self):
         return self._getClassValue('fortSave') + self.mod('con')
 
@@ -335,6 +339,3 @@ class CharacterModel(Model):
             lambda spell: spell.levels['wizard'] == 1 and spell.school == 'illusion',
         ),
     ]
-
-
-

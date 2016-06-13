@@ -5,6 +5,7 @@ import kivy
 from kivy.app import App
 
 from kivy.uix.widget import Widget
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -105,42 +106,39 @@ class DailySpellsView(GridLayout, Screen):
 class CharacterStatsView(GridLayout):
 
     def __init__(self, character, **kwargs):
+        kwargs['size_hint_x'] = 0.2
         super(CharacterStatsView, self).__init__(**kwargs)
 
-        self.cols = 3
+        if kwargs['show_real']:
+            self.cols = 3
+        else:
+            self.cols = 2
+
         self.character = character
 
-        self.init_widgets()
+        self.init_widgets(show_real=kwargs['show_real'])
 
-    def init_widgets(self):
+    def init_widgets(self, show_real):
         stats = [
             'str', 'dex', 'con', 'int', 'wis', 'cha'
         ]
         for stat in stats:
             self.add_widget(Label(text=stat))
-            self.add_widget(Label(text=str(self.character.stats[stat])))
+            if show_real:
+                self.add_widget(Label(text=str(self.character.stats[stat])))
             mod = str(self.character.mod(stat))
             if mod[0] != '-':
                 mod = '+' + mod
             self.add_widget(Label(text=mod))
 
 
-class CharacterDetailInfoView(GridLayout):
 
-    def __init__(self, character, **kwargs):
-        super(CharacterDetailInfoView, self).__init__(**kwargs)
 
-        self.cols = 4
-        self.character = character
 
-        self.init_widgets()
 
-    def init_widgets(self):
-        self.add_widget(Label(text=self.character.name, font_size=24))
-        self.add_widget(Label(text=self.character.get_level_as_string()))
-        self.add_widget(Label(text=self.character.race.name))
 
-        self.add_widget(CharacterStatsView(self.character))
+
+
 
 
 class CharacterDetailView(GridLayout, Screen):
@@ -160,9 +158,41 @@ class CharacterDetailView(GridLayout, Screen):
         self.init_widgets()
 
     def init_widgets(self):
-        self.add_widget(CharacterDetailInfoView(self.character))
-        self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
-        self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
+
+        # Details
+        top_row = BoxLayout(orientation='horizontal')
+        top_row.add_widget(Label(text=self.character.name, font_size=24))
+        top_row.add_widget(Label(text=self.character.get_level_as_string()))
+        race_block = BoxLayout(orientation='vertical')
+        race_block.add_widget(Label(text=self.character.size.name))
+        race_block.add_widget(Label(text=self.character.race.name))
+        top_row.add_widget(race_block)
+        self.add_widget(top_row)
+
+        # Stats and Equip
+        second_row = BoxLayout(orientation='horizontal')
+        second_row.add_widget(CharacterStatsView(self.character,show_real=False,size_hint_y=None,height=96))
+        second_row.add_widget(Label(text='Todo: equipped items'))
+        self.add_widget(second_row)
+
+        # Movespeed and AC
+        self.add_widget(Label(text='Todo: Movespeed and AC'))
+
+        # Ongoing effects
+        self.add_widget(Label(text='Todo: Ongoing effects'))
+
+        # Ongoing effects
+        self.add_widget(Label(text='Todo: Ongoing effects'))
+
+        # Other screens
+        self.add_widget(Button(text='Detail >'))
+        self.add_widget(Button(text='Spells Known >'))
+        self.add_widget(Button(text='Combat >'))
+        self.add_widget(Button(text='Equipment >'))
+        self.add_widget(Button(text='Additional Details >'))
+
+        #self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
+        #self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
 
 
 
@@ -321,4 +351,3 @@ class PathfinderAppView(App):
 
 if __name__ == '__main__':
     PathfinderAppView().run()
-
