@@ -24,6 +24,56 @@
     }
   ]
 },{
+  "name": "druid",
+  "levels": [
+    {
+      "level": 1,
+      "baseAttack": 0,
+      "fortSave": 2,
+      "refSave": 0,
+      "willSave": 2
+    },
+    {
+      "level": 2,
+      "baseAttack": 1,
+      "fortSave": 3,
+      "refSave": 0,
+      "willSave": 3
+    },
+    {
+      "level": 3,
+      "baseAttack": 2,
+      "fortSave": 3,
+      "refSave": 1,
+      "willSave": 3
+    }
+  ]
+},{
+  "name": "ranger",
+  "levels": [
+    {
+      "level": 1,
+      "baseAttack": 1,
+      "fortSave": 2,
+      "refSave": 2,
+      "willSave": 0
+    },
+    {
+      "level": 2,
+      "baseAttack": 2,
+      "fortSave": 3,
+      "refSave": 3,
+      "willSave": 0
+    },
+    {
+      "level": 3,
+      "baseAttack": 3,
+      "fortSave": 3,
+      "refSave": 3,
+      "willSave": 1
+    }
+  ]
+},{
   "name": "wizard",
   "levels": [
     {
