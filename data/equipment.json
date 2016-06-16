@@ -1,0 +1,200 @@
+[{
+  "name": "dagger",
+  "description": "A dagger has a blade that is about 1 foot in length.",
+  "cost": 2,
+  "weight": 1,
+  "slot": "held",
+  "skills": {
+    "sleight of hand": {
+      "bonus": 2,
+      "target": "item"
+    }
+  },
+  "type": "weapon",
+  "subtype": "simple",
+  "handedness": "light",
+  "business": [
+    {
+      "range_type": "melee",
+      "range": 0,
+      "damage": "1d4",
+      "critical": { "range": 19, "multiplier": 2 },
+      "type": "p/s"
+    },{
+      "range_type": "thrown",
+      "range": 10,
+      "damage": "1d4",
+      "critical": { "range": 19, "multiplier": 2 },
+      "type": "p"
+    }
+  ]
+},{
+  "name": "short sword",
+  "description": "A short sword is about 2 feet in length.",
+  "cost": 10,
+  "weight": 2,
+  "slot": "held",
+  "type": "weapon",
+  "subtype": "martial",
+  "handedness": "light",
+  "business": [{
+    "range_type": "melee",
+    "range": 0,
+    "damage": "1d6",
+    "critical": { "range": 19, "multiplier": 2 },
+    "type": "p"
+  }]
+},{
+  "name": "longsword",
+  "description": "A longsword is about 3.5 feet in length.",
+  "cost": 15,
+  "weight": 4,
+  "slot": "held",
+  "type": "weapon",
+  "subtype": "martial",
+  "handedness": "one",
+  "business": [{
+    "range_type": "melee",
+    "range": 0,
+    "damage": "1d8",
+    "critical": { "range": 19, "multiplier": 2 },
+    "type": "s"
+  }]
+},{
+  "name": "handaxe",
+  "description": "This one-handed axe is short (roughly 1 foot long) and designed for use with one hand. Unlike throwing axes, it is not well balanced for a graceful tumbling motion, and is instead heavier at its head. Tomahawks, war hatchets, and other such names usually refer to hand axes.",
+  "cost": 6,
+  "weight": 4,
+  "slot": "held",
+  "type": "weapon",
+  "subtype": "martial",
+  "handedness": "light",
+  "business": [{
+    "range_type": "melee",
+    "range": 0,
+    "damage": "1d6",
+    "critical": { "range": 20, "multiplier": 3 },
+    "type": "s"
+  }]
+},{
+  "name": "greataxe",
+  "description": "This two-handed battle axe is heavy enough that you can't wield it with one hand. The head may have one blade or two, and may be bearded (meaning hooked or trailing at the bottom) to increase cleaving power and help pull down enemy shields. The haft is usually 3 to 4 feet long.",
+  "cost": 20,
+  "weight": 12,
+  "slot": "held",
+  "type": "weapon",
+  "subtype": "martial",
+  "handedness": "two",
+  "business": [{
+    "range_type": "melee",
+    "range": 0,
+    "damage": "1d12",
+    "critical": { "range": 20, "multiplier": 3 },
+    "type": "s"
+  }]
+},{
+  "name": "shortspear",
+  "description": "A shortspear is about 3 feet in length, making it a suitable thrown weapon.",
+  "cost": 1,
+  "weight": 3,
+  "slot": "held",
+  "type": "weapon",
+  "subtype": "simple",
+  "handedness": "two",
+  "business": [
+    {
+      "range_type": "melee",
+      "range": 0,
+      "damage": "1d6",
+      "critical": {
+        "range": 20,
+        "multiplier": 2
+      },
+      "type": "p"
+    },{
+      "range_type": "thrown",
+      "range": 20,
+      "damage": "1d6",
+      "critical": {
+        "range": 20,
+        "multiplier": 2
+      },
+      "type": "p"
+    }
+  ]
+},{
+  "name": "chain shirt",
+  "description": "Covering the torso, this shirt is made up of thousands of interlocking metal rings.",
+  "cost": 100,
+  "weight": 25,
+  "slot": "body",
+  "type": "armor",
+  "subtype": "light",
+  "defense": {
+    "ac": 4,
+    "check_penalty": -2,
+    "max_dexterity": 4,
+    "arcane_spell_failure": 0.20
+  }
+},{
+  "name": "chainmail",
+  "description": "Unlike a chain shirt, which covers only the chest, chainmail protects the wearer with a complete mesh of chain links that cover the torso and arms, and extends below the waist. Multiple interconnected pieces offer additional protection over vital areas. The suit includes gauntlets.",
+  "cost": 150,
+  "weight": 40,
+  "slot": "body",
+  "type": "armor",
+  "subtype": "medium",
+  "defense": {
+    "ac": 6,
+    "check_penalty": -5,
+    "max_dexterity": 2,
+    "arcane_spell_failure": 0.30
+  }
+},{
+  "name": "hide",
+  "description": "Hide armor is made from the tanned skin of particularly thick-hided beasts, stitched with either multiple overlapping layers of crude leather or exterior pieces of leather stuffed with padding or fur. Damage to the armor is typically repaired by restitching gashes or adding new pieces of hide, giving the most heavily used suits a distinctively patchwork quality.",
+  "cost": 15,
+  "weight": 25,
+  "slot": "body",
+  "type": "armor",
+  "subtype": "medium",
+  "defense": {
+    "ac": 4,
+    "check_penalty": -2,
+    "max_dexterity": 4,
+    "arcane_spell_failure": 0.20
+  }
+},{
+  "name": "spellbook",
+  "description": "A spellbook has 100 pages of parchment, and each spell takes up one page per spell level (one page each for 0-level spells).",
+  "cost": 15,
+  "weight": 3,
+  "slot": "held",
+  "type": "item",
+  "subtype": "book",
+  "pages": 100
+},{
+  "name": "black ink",
+  "description": "This vial contains 1 ounce of ink. Ink in colors other than black costs twice as much.",
+  "cost": 8,
+  "weight": 0.1,
+  "slot": "none",
+  "type": "item",
+  "subtype": "ink"
+},{
+"name": "inkpen",
+  "description": "This is a wooden stylus with a metal tip that retains a small amount of ink after you dip it in a vial of ink.",
+  "cost": 0.1,
+  "weight": 0.1,
+  "slot": "none",
+  "type": "item",
+  "subtype": "writing tools"
+},{
+  "name": "rope",
+  "description": "The DC to escape hemp rope bonds is equal to 20 + the CMB of the creature that tied the bonds. Ropes do not need to make a check every round to maintain the pin. If the DC to escape is higher than 20 + the tying creatures CMB, the tied up creature cannot escape from the bonds, even with a natural 20 on the check. This rope has 2 hit points and can be burst with a DC 23 Strength check.",
+  "cost": 1,
+  "weight": 10,
+  "slot": "none",
+  "type": "rope",
+  "subtype": "hemp"
+}]
