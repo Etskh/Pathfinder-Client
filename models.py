@@ -7,8 +7,6 @@ from core import Model, Collection, CannedDataSource
 
 class SizeModel(Model):
 
-    # TODO: Turn the string-indexed indices into ACTUAL python objects
-
     def __init__(self, name):
         self.index = SizeModel._list[name]
         self.name = name
@@ -75,50 +73,14 @@ class RaceModel(Model):
 
 
 class SpellModel(Model):
+
+    name = 'spell'
+
     def __init__(self, data):
         self.name = data['name']
         self.levels = data['levels']
         self.school = data['school']
         self.effect = data['effect']
-
-    @staticmethod
-    def get_by_name(name):
-        #
-        # Initialize the spell objects
-        SpellModel._initialize_spells()
-        #
-        # Now search for the spell
-        for spell in SpellModel._all_spells:
-            if spell.name == name:
-                return spell
-        return None
-
-    @staticmethod
-    def _initialize_spells():
-        if not SpellModel._all_spells:
-            SpellModel._all_spells = []
-            for spell in SpellModel._spell_data:
-                SpellModel._all_spells.append(SpellModel(spell))
-
-    _all_spells = None
-    _spell_data = [{
-        'name': 'Message',
-        'levels': {'wizard': 0},
-        'school': 'abjuration',
-        'effect': 'Point fingers at individuals and communicate',
-    }, {
-        'name': 'Daze',
-        'levels': {'wizard': 0},
-        'school': 'abjuration',
-        'effect': 'Make one guy kinda fucked up a little',
-    }, {
-        'name': 'Silent Image',
-        'levels': {'wizard': 1},
-        'school': 'illusion',
-        'effect': 'Creates a silent image',
-    }]
-
-
 
 
 
@@ -134,6 +96,10 @@ class ClassLevelModel(Model):
         self.fortSave = data['fortSave']
         self.refSave = data['refSave']
         self.willSave = data['willSave']
+        try:
+            self.spd = data['spd']
+        except KeyError:
+            self.spd = []
 
 
 
@@ -149,7 +115,14 @@ class ClassModel(Model):
         self.levels = Collection(ClassLevelModel)
         self.levels.load(data['levels'])
 
-    def atLevel(self, level):
+        try:
+            self.bonus_spells_per_day = data['bonus_spells_per_day']
+            self.casting_stat = data['casting_stat']
+        except KeyError:
+            self.bonus_spells_per_day = False
+            self.casting_stat = None
+
+    def at(self, level):
         return self.levels.get_by_field('level', level)
 
 
@@ -159,23 +132,17 @@ class ClassModel(Model):
 
 
 
+class SpellSlot():
+    def __init__(self, **kwargs):
 
-class SpellSlotModel(Model):
-    def __init__(self, description, character_req, spell_req):
-        self.description = description
-        self.character_req = character_req
-        self.spell_req = spell_req
+        self.reason = kwargs['reason']
+        self.level = kwargs['level']
+        self.cls = kwargs['cls']
 
-    def check_character(self, character):
-        return self.character_req(character)
-
-    def check_spell(self, spell):
-        return self.spell_req(spell)
-
-
-
-
-
+        try:
+            self.school = kwargs['school']
+        except KeyError:
+            self.school = None
 
 
 
@@ -195,17 +162,23 @@ class CharacterModel(Model):
             'cha': int(data['cha']),
         }
 
-        # Now get the race from the data
+        # Now getting all local data
         game_data = CannedDataSource()
-
         races = game_data.get(RaceModel)
+        classes = game_data.get(ClassModel)
+
         self.race = races.get_by_field('name', data['race'])
 
         # Now load in the classes
         self.levels = {}
+        self.classes = {}
+
         for cls in data['classes']:
             self.levels[cls] = data['classes'][cls]
+            self.classes[cls] = classes.get_by_field('name', cls)
 
+
+        # TODO: Make this into the choice system
         try:
             self.school_specialization = data['school_specialization']
         except KeyError:
@@ -214,37 +187,109 @@ class CharacterModel(Model):
         self.spells_known = data['spells_known']
         self.spells = []
 
+        self._spell_slots = None
+
+
     def get_level_as_string(self):
         levels = []
         for levelClass in self.levels:
             levels.append('{0} {1}'.format(levelClass, self.levels[levelClass]))
         return ' / '.join(levels)
 
-    def get_daily_spell_slots(self):
-        slots = []
-        for slot in CharacterModel.possibleSlots:
-            if slot.check_character(self):
-                slots.append(slot)
+    @property
+    def spell_slots(self):
+        text = {
+            'int': 'smart',
+            'wis': 'wise',
+            'cha': 'charismatic',
+        }
 
-        # Now remove slots where there are zero known
-        # spells that fit that criteria
-        for knownSpellName in self.spells_known:
-            spell = SpellModel.get_by_name(knownSpellName)
-            if spell:
-                self.spells.append(spell)
+        if self._spell_slots:
+            return self._spell_slots
 
-        # Check that every slot has at least one spell
-        for slot in slots:
-            has_spell = False
-            for spell in self.spells:
-                if slot.check_spell(spell):
-                    has_spell = True
-                    break
+        # For every class,
+        #
+        for cls in self.classes:
+            class_level = self.classes[cls].at(self.levels[cls])
 
-            if not has_spell:
-                slots.remove(slot)
+            # For every spell-level you can cast
+            #
+            for spell_level in class_level.spd:
 
-        return slots
+                spell_count = int(class_level.spd[spell_level])
+                #print(spell_count)
+                for x in range(0, spell_count):
+
+                    # Add that many spells
+                    #
+                    self.add_spell_slot(
+                       reason='Daily spells per level {} ({} of {})'.format(
+                           spell_level, x, spell_count
+                       ),
+                       cls=self.classes[cls],
+                       level=spell_level
+                    )
+
+            # Now add bonus spells for being smart, funny, wise
+            #
+            if self.classes[cls].bonus_spells_per_day:
+                # Add lots of values
+                casting_stat = self.classes[cls].casting_stat
+
+                if self.stats[casting_stat] > 18:
+                    self.add_extra_spell_slot(
+                        reason='Being ' + text[casting_stat],
+                        level=4,  # or whatever it is
+                        cls=self.classes[cls]
+                    )
+                if self.stats[casting_stat] > 16:
+                    self.add_extra_spell_slot(
+                        reason='Being moderately ' + text[casting_stat],
+                        level=3,  # or whatever it is
+                        cls=self.classes[cls]
+                    )
+                if self.stats[casting_stat] > 14:
+                    self.add_extra_spell_slot(
+                        reason='Being reasonably ' + text[casting_stat],
+                        level=2,  # or whatever it is
+                        cls=self.classes[cls]
+                    )
+                if self.stats[casting_stat] > 12:
+                    self.add_extra_spell_slot(
+                        reason='Being above average ' + text[casting_stat],
+                        level=1,  # or whatever it is
+                        cls=self.classes[cls]
+                    )
+
+        return self._spell_slots
+
+    def add_extra_spell_slot(self, **kwargs):
+        """
+            Same as add_spell_slot, except it checks that there's already
+            a spell of the level that can be casted
+        """
+        # TODO: Check that the character can cast the spells:
+
+        return self.add_spell_slot(**kwargs)
+
+    def add_spell_slot(self, **kwargs):
+
+        #print(kwargs['cls'].__dict__)
+
+        casting_stat = kwargs['cls'].casting_stat
+        if int(kwargs['level']) + 10 > self.stats[casting_stat]:
+            return False
+
+        if not self._spell_slots:
+            self._spell_slots = []
+
+        self._spell_slots.append(
+            SpellSlot(**kwargs)
+        )
+
+        print('Adding spell slot for ' + kwargs['reason'])
+
+        return True
 
     def __str__(self):
         return json.dumps(self.__dict__)
@@ -281,7 +326,7 @@ class CharacterModel(Model):
         return self._getClassValue('baseAttack')
 
 
-
+    """
     possibleSlots = [
         SpellSlotModel(
             'Wizard gets 3 0-level spells at 1st level (1)',
@@ -339,3 +384,5 @@ class CharacterModel(Model):
             lambda spell: spell.levels['wizard'] == 1 and spell.school == 'illusion',
         ),
     ]
+
+    """

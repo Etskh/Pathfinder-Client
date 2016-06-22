@@ -7,6 +7,7 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.stacklayout import StackLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen, FallOutTransition
@@ -85,17 +86,35 @@ class SpellsKnownListView(GridLayout, Screen):
 # DailySpellsView
 #
 
+class SpellSlotView(GridLayout):
+    pass
+
+
 
 class DailySpellsView(GridLayout, Screen):
     title = 'Daily Spells'
 
     def __init__(self, character, dataSource, **kwargs):
         kwargs['name'] = self.__class__.title
+        kwargs['orientation'] = 'lr-tb'
         super(DailySpellsView, self).__init__(**kwargs)
 
         self.cols = 1
 
         self.add_widget(Label(text='Daily Spalls'))
+        self.character = character
+
+        self.init_widgets()
+
+    def init_widgets(self):
+        print( self.character.spell_slots)
+
+        for spell_slot in self.character.spell_slots:
+            print(spell_slot)
+            self.add_widget(Label(text=spell_slot.reason))
+
+
+
 
 
 #
@@ -187,13 +206,13 @@ class CharacterDetailView(GridLayout, Screen):
         # Other screens
         self.add_widget(Button(text='Detail >'))
         self.add_widget(Button(text='Spells Known >'))
+        self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
         self.add_widget(Button(text='Combat >'))
         self.add_widget(Button(text='Equipment >'))
         self.add_widget(Button(text='Additional Details >'))
 
         #self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
         #self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
-
 
 
 
@@ -314,14 +333,24 @@ class HamburgerMenuView(GridLayout):
         self.cols = 3
         self.return_callback = return_callback
 
+        self.title = 'Visual Character'
+        self.character_name = ''
+        self.sub_screen_title = ''
+
+        self.title_widget = Label(text=self.title)
+
         btn = Button(text='<', size_hint_x=None, width=64)
         btn.bind(on_press=self.return_callback)
-        self.add_widget(btn)
 
-        self.add_widget(Label(text='Visual Character'))
+        self.add_widget(btn)
+        self.add_widget(self.title_widget)
         self.add_widget(Button(text='=', size_hint_x=None, width=64))
 
+    def set_character(self, character):
+        self.character_name = character.name
 
+    def do_widget_title(self):
+        return
 
 
 
