@@ -22,6 +22,84 @@
   "saving_throw": null,
   "spell_resistance": null
 },{
+  "name": "Ghost Sound",
+  "text": "Ghost sound allows you to create a volume of sound that rises, recedes, approaches, or remains at a fixed place. You choose what type of sound ghost sound creates when casting it and cannot thereafter change the sound's basic character. The volume of sound created depends on your level. You can produce as much noise as four normal humans per caster level (maximum 40 humans). Thus, talking, singing, shouting, walking, marching, or running sounds can be created. The noise a ghost sound spell produces can be virtually any type of sound within the volume limit. A horde of rats running and squeaking is about the same volume as eight humans running and shouting. A roaring lion is equal to the noise from 16 humans, while a roaring dragon is equal to the noise from 32 humans. Anyone who hears a ghost sound receives a Will save to disbelieve.",
+  "school": "illusion",
+  "level" : {
+    "bard": 0,
+    "sorcerer": 0,
+    "wizard": 0
+  },
+  "casting_time": "1 standard action",
+  "components": "VSM",
+  "focus": "a bit of wool or a small lump of wax",
+  "range": "close",
+  "effect": "illusory sounds",
+  "duration": {
+    "per_level": 10,
+    "unit": "minute"
+  },
+  "saving_throw": null,
+  "spell_resistance": null
+},{
+  "name": "Mage Hand",
+  "text": "You point your finger at an object and can lift it and move it at will from a distance. As a move action, you can propel the object as far as 15 feet in any direction, though the spell ends if the distance between you and the object ever exceeds the spell's range.",
+  "level" : {
+    "bard": 0,
+    "sorcerer": 0,
+    "wizard": 0
+  },
+  "casting_time": "1 standard action",
+  "components": "VS",
+  "range": "close",
+  "target": "one nonmagical, unattended object weighing up to 5lbs",
+  "duration": "concentration",
+  "saving_throw": null,
+  "spell_resistance": null
+},{
+  "name": "Grease",
+  "text": "A grease spell covers a solid surface with a layer of slippery grease. Any creature in the area when the spell is cast must make a successful Reflex save or fall. A creature can walk within or through the area of grease at half normal speed with a DC 10 Acrobatics check. Failure means it can't move that round (and must then make a Reflex save or fall), while failure by 5 or more means it falls (see the Acrobatics skill for details). Creatures that do not move on their turn do not need to make this check and are not considered flat-footed. The spell can also be used to create a greasy coating on an item. Material objects not in use are always affected by this spell, while an object wielded or employed by a creature requires its bearer to make a Reflex saving throw to avoid the effect. If the initial saving throw fails, the creature immediately drops the item. A saving throw must be made in each round that the creature attempts to pick up or use the greased item. A creature wearing greased armor or clothing gains a +10 circumstance bonus on Escape Artist checks and combat maneuver checks made to escape a grapple, and to their CMD to avoid being grappled.",
+  "school": "conjuration",
+  "level" : {
+    "bard": 1,
+    "sorcerer": 1,
+    "wizard": 1
+  },
+  "casting_time": "1 standard action",
+  "components": "VSM",
+  "focus": "butter",
+  "range": "close",
+  "target": "one object or 10-ft square",
+  "duration": {
+    "per_level": 1,
+    "unit": "minute"
+  },
+  "saving_throw": "see text",
+  "spell_resistance": null
+},{
+  "name": "Mage Armour",
+  "text": "An invisible but tangible field of force surrounds the subject of a mage armor spell, providing a +4 armor bonus to AC. Unlike mundane armor, mage armor entails no armor check penalty, arcane spell failure chance, or speed reduction. Since mage armor is made of force, incorporeal creatures can't bypass it the way they do normal armor.",
+  "school": "conjuration",
+  "level" : {
+    "bard": 1,
+    "sorcerer": 1,
+    "wizard": 1
+  },
+  "casting_time": "1 standard action",
+  "focus": "a piece of cured leather",
+  "range": "touch",
+  "effect": {
+    "stat": {
+      "AC": 4
+    }
+  },
+  "duration": {
+    "per_level": 1,
+    "unit": "round"
+  },
+  "saving_throw": "will",
+  "spell_resistance": null
+},{
   "name": "Silent Image",
   "text": "This spell creates the visual illusion of an object, creature, or force, as visualized by you. The illusion does not create sound, smell, texture, or temperature. You can move the image within the limits of the size of the effect.",
   "school": "illusion",
@@ -31,18 +109,31 @@
     "wizard": 1
   },
   "casting_time": "1 standard action",
+  "components": "VSF",
   "focus": "a bit of fleece",
   "range": "long",
   "effect": "visual figment that cannot extend beyond four 10-ft. cubes + one 10-ft. cube/level (S)",
   "duration": "concentration",
-  "targets": {
-    "per_level": 1,
-    "unit": "creature"
+  "saving_throw": "will",
+  "spell_resistance": null
+},{
+  "name": "Invisibility",
+  "text": "The creature or object touched becomes invisible. If the recipient is a creature carrying gear, that vanishes, too. If you cast the spell on someone else, neither you nor your allies can see the subject, unless you can normally see invisible things or you employ magic to do so. Items dropped or put down by an invisible creature become visible; items picked up disappear if tucked into the clothing or pouches worn by the creature. Light, however, never becomes invisible, although a source of light can become so (thus, the effect is that of a light with no visible source). Any part of an item that the subject carries but that extends more than 10 feet from it becomes visible. Of course, the subject is not magically silenced, and certain other conditions can render the recipient detectable (such as swimming in water or stepping in a puddle). If a check is required, a stationary invisible creature has a +40 bonus on its Stealth checks. This bonus is reduced to +20 if the creature is moving. The spell ends if the subject attacks any creature. For purposes of this spell, an attack includes any spell targeting a foe or whose area or effect includes a foe. Exactly who is a foe depends on the invisible character's perceptions. Actions directed at unattended objects do not break the spell. Causing harm indirectly is not an attack. Thus, an invisible being can open doors, talk, eat, climb stairs, summon monsters and have them attack, cut the ropes holding a rope bridge while enemies are on the bridge, remotely trigger traps, open a portcullis to release attack dogs, and so forth. If the subject attacks directly, however, it immediately becomes visible along with all its gear. Spells such as bless that specifically affect allies but not foes are not attacks for this purpose, even when they include foes in their area.",
+  "school": "illusion",
+  "level" : {
+    "bard": 2,
+    "sorcerer": 2,
+    "wizard": 2
   },
+  "casting_time": "1 standard action",
+  "components": "VSM/DF",
+  "focus": "a bit of fleece",
+  "range": ["personal", "touch"],
+  "target": "you or a creature or object weighing no more than 100 lbs./level",
   "duration": {
-    "per_level": 10,
+    "per_level": 1,
     "unit": "minute"
   },
-  "saving_throw": null,
+  "saving_throw": "will",
   "spell_resistance": null
 }]
