@@ -1,0 +1,17 @@
+
+[DESIGN]
+max-attributes = 14
+max-line-length = 120
+
+[MESSAGES CONTROL]
+# Disable the following PyLint messages:
+# R0903 - Too many attributes
+# R0903 - Not enough public methods
+# C0103 - Names for methods are too awesome
+disable-msg=R0902,R0903,C0103
+
+[REPORTS]
+
+# set the output format. Available formats are text, parseable, colorized and
+# html
+output-format=colorized
