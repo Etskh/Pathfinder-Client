@@ -107,10 +107,8 @@ class DailySpellsView(GridLayout, Screen):
         self.init_widgets()
 
     def init_widgets(self):
-        #print( self.character.spell_slots)
 
         for spell_slot in self.character.spell_slots:
-            #print(spell_slot)
             self.add_widget(Label(text=spell_slot.reason))
 
 
@@ -190,30 +188,22 @@ class CharacterDetailView(GridLayout, Screen):
 
         # Stats and Equip
         second_row = BoxLayout(orientation='horizontal')
-        second_row.add_widget(CharacterStatsView(self.character,show_real=False,size_hint_y=None,height=96))
-        second_row.add_widget(Label(text='Todo: equipped items'))
+        second_row.add_widget(CharacterStatsView(self.character,show_real=False,size_hint_y=None, height=96))
+        #second_row.add_widget(Label(text='Todo: equipped items'))
+        second_row.add_widget(Label(text=''))
         self.add_widget(second_row)
 
         # Movespeed and AC
-        self.add_widget(Label(text='Todo: Movespeed and AC'))
+        #self.add_widget(Label(text='Todo: Movespeed and AC'))
 
         # Ongoing effects
-        self.add_widget(Label(text='Todo: Ongoing effects'))
+        #self.add_widget(Label(text='Todo: Ongoing effects'))
 
         # Ongoing effects
-        self.add_widget(Label(text='Todo: Ongoing effects'))
+        #self.add_widget(Label(text='Todo: Ongoing effects'))
 
         # Other screens
-        self.add_widget(Button(text='Detail >'))
-        self.add_widget(Button(text='Spells Known >'))
         self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
-        self.add_widget(Button(text='Combat >'))
-        self.add_widget(Button(text='Equipment >'))
-        self.add_widget(Button(text='Additional Details >'))
-
-        #self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
-        #self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
-
 
 
 
@@ -300,7 +290,6 @@ class PathfinderScreenManager(ScreenManager):
             self.add_widget(self.detail_view)
             self.current = CharacterDetailView.title
         else:
-            print 'going to the next one'
             self.current = CharacterListView.title
 
     def set_screen(self, cls):
@@ -315,22 +304,13 @@ class PathfinderScreenManager(ScreenManager):
 
         self.current = cls.title
 
-    #def previous(self):
-        #last_item = self.screen_names[-1]
-        #super(ScreenManager, self).previous()
-        #self.remove_widget(self.get_screen(last_item))
-        #try:
-        #    self.remove_widget(super(ScreenManager, self).previous())
-        #except kivy.uix.screenmanager.ScreenManagerException:
-        #    pass
-
 
 
 class HamburgerMenuView(GridLayout):
     def __init__(self, return_callback, **kwargs):
         super(HamburgerMenuView, self).__init__(**kwargs)
 
-        self.cols = 3
+        self.cols = 2
         self.return_callback = return_callback
 
         self.title = 'Visual Character'
@@ -344,7 +324,6 @@ class HamburgerMenuView(GridLayout):
 
         self.add_widget(btn)
         self.add_widget(self.title_widget)
-        self.add_widget(Button(text='=', size_hint_x=None, width=64))
 
     def set_character(self, character):
         self.character_name = character.name
@@ -366,7 +345,6 @@ class PathFinderWidget(GridLayout):
 
     def return_callback(self, instance):
         self.pathfinder_screen_manager.current = self.pathfinder_screen_manager.previous()
-        print( self.pathfinder_screen_manager.screen_names)
 
 
 

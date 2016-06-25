@@ -269,8 +269,6 @@ class CharacterModel(Model):
         for cls in self.classes:
             class_level = self.classes[cls].at(self.levels[cls])
 
-            print(class_level.__dict__)
-
             # For every spell-level you can cast
             #
             for spell_level in class_level.spd:
