@@ -66,7 +66,9 @@ class CannedDataSource(object):
         if model.name == 'class':
             return self.load_from_file(model, 'data/classes.json')
         if model.name == 'character':
-            return self.load_from_file(model, 'characters/races.json')
+            return self.load_from_file(model, 'data/characters.json')
+        if model.name == 'spell':
+            return self.load_from_file(model, 'data/spells.json')
         return None
 
     def load_from_file(self, model, filename):

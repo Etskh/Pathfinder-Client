@@ -7,7 +7,6 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.stacklayout import StackLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen, FallOutTransition
@@ -58,10 +57,11 @@ class SpellsKnownListItemView(GridLayout):
     def __init__(self, spell, **kwargs):
         super(SpellsKnownListItemView, self).__init__(**kwargs)
 
-        self.cols = 1
+        self.cols = 2
+        self.spell = spell
 
-        self.add_widget(Label(text='Message'))
-
+        self.add_widget(Label(text=self.spell.name))
+        self.add_widget(Label(text=self.spell.levels_as_string))
 
 class SpellsKnownListView(GridLayout, Screen):
 
@@ -73,7 +73,10 @@ class SpellsKnownListView(GridLayout, Screen):
 
         self.cols = 1
 
-        self.add_widget(SpellsKnownListItemView(spell=None))
+        self.character = character
+
+        for spell in self.character.spells_known:
+            self.add_widget(SpellsKnownListItemView(spell=spell))
 
 
 
@@ -204,6 +207,7 @@ class CharacterDetailView(GridLayout, Screen):
 
         # Other screens
         self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
+        self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
 
 
 
@@ -332,7 +336,6 @@ class HamburgerMenuView(GridLayout):
         return
 
 
-
 class PathFinderWidget(GridLayout):
     def __init__(self, **kwargs):
         super(PathFinderWidget, self).__init__(**kwargs)
@@ -345,9 +348,6 @@ class PathFinderWidget(GridLayout):
 
     def return_callback(self, instance):
         self.pathfinder_screen_manager.current = self.pathfinder_screen_manager.previous()
-
-
-
 
 
 class PathfinderAppView(App):

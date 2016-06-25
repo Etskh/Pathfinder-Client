@@ -109,10 +109,14 @@ class SpellModel(Model):
 
     def __init__(self, data):
         self.name = data['name']
-        self.levels = data['levels']
+        self.levels = data['level']
         self.school = data['school']
-        self.effect = data['effect']
+        self.text = data['text']
+        #self.effect = data['effect']
 
+    @property
+    def levels_as_string(self):
+        return ', '.join([x+' '+str(self.levels[x]) for x in self.levels])
 
 
 
@@ -297,6 +301,7 @@ class CharacterModel(Model):
         game_data = CannedDataSource()
         races = game_data.get(RaceModel)
         classes = game_data.get(ClassModel)
+        spells = game_data.get(SpellModel)
 
         self.race = races.get_by_field('name', data['race'])
 
@@ -313,7 +318,9 @@ class CharacterModel(Model):
         except KeyError:
             self.school_specialization = None
 
-        self.spells_known = data['spells_known']
+        self.spells_known = []
+        for spell_name in data['spells_known']:
+            self.spells_known.append(spells.get_by_field('name', spell_name))
 
         self._spell_slots = None
 
