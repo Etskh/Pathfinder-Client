@@ -107,10 +107,10 @@ class DailySpellsView(GridLayout, Screen):
         self.init_widgets()
 
     def init_widgets(self):
-        print( self.character.spell_slots)
+        #print( self.character.spell_slots)
 
         for spell_slot in self.character.spell_slots:
-            print(spell_slot)
+            #print(spell_slot)
             self.add_widget(Label(text=spell_slot.reason))
 
 

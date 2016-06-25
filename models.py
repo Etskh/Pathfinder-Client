@@ -1,6 +1,7 @@
 
 
 import json
+import math
 
 from core import Model, Collection, CannedDataSource
 
@@ -92,19 +93,22 @@ class ClassLevelModel(Model):
 
     def __init__(self, data):
         self.level = data['level']
-        self.baseAttack = data['baseAttack']
-        self.fortSave = data['fortSave']
-        self.refSave = data['refSave']
-        self.willSave = data['willSave']
+        self.base_attack = data['base_attack']
+        self.fort_save = data['fort_save']
+        self.ref_save = data['ref_save']
+        self.will_save = data['will_save']
         try:
             self.spd = data['spd']
         except KeyError:
             self.spd = []
 
 
+class UnknownRateError(Exception):
+    def __init__(self, value):
+        self.value = value
 
-
-
+    def __str__(self):
+        return repr(self.value)
 
 
 class ClassModel(Model):
@@ -112,8 +116,25 @@ class ClassModel(Model):
 
     def __init__(self, data):
         self.name = data['name']
+        self.description = data['description']
         self.levels = Collection(ClassLevelModel)
-        self.levels.load(data['levels'])
+        level_data = []
+
+        for i in range(1, 20):
+            level = {
+                'level': i,
+                'base_attack': ClassModel.get_rate_at_level(data['base_attack_rate'], i),
+                'fort_save': ClassModel.get_rate_at_level(data['fort_save'], i),
+                'ref_save': ClassModel.get_rate_at_level(data['ref_save'], i),
+                'will_save': ClassModel.get_rate_at_level(data['will_save'], i),
+            }
+            try:
+                level['spd'] = ClassModel.get_spd_at_level(data['spells_per_day_rate'], i)
+            except KeyError:
+                pass
+            level_data.append(level)
+
+        self.levels.load(level_data)
 
         try:
             self.bonus_spells_per_day = data['bonus_spells_per_day']
@@ -122,13 +143,49 @@ class ClassModel(Model):
             self.bonus_spells_per_day = False
             self.casting_stat = None
 
+
+    @staticmethod
+    def get_rate_at_level(rate, level):
+        # Base attack bonuses
+        if rate == 'fast':
+            return level
+        if rate == 'average':
+            return level / 1.5
+        if rate == 'slow':
+            return level / 2
+
+        if rate == 'strong':
+            return (level + 4) / 2
+        if rate == 'weak':
+            return level / 3
+
+        raise UnknownRateError(rate)
+
+    @staticmethod
+    def wide_spell_count_at_level(char_level, spell_level):
+        # =FLOOR(MIN(4,IF(C$2=0,1,0)+LOG(MAX(1,$B7 - (C$2*2)+3)) *4.5))
+        log_arg = max(1.0, float(char_level) - (float(spell_level) * 2) + 3)
+        real_answer = 1.0 if spell_level == 0 else 0
+        real_answer += math.log(log_arg, 10) * 4.5
+        real_answer = math.floor(min(4.0, real_answer))
+        return real_answer
+
+    @staticmethod
+    def get_spd_at_level(rate, level):
+
+        if rate == 'wide':
+            spd = {}
+            for i in range(0, 10):
+                spd[str(i)] = ClassModel.wide_spell_count_at_level(level, i)
+            return spd
+
+        if rate == 'late':
+            return {}
+
+        raise UnknownRateError(rate)
+
     def at(self, level):
         return self.levels.get_by_field('level', level)
-
-
-
-
-
 
 
 
@@ -212,12 +269,14 @@ class CharacterModel(Model):
         for cls in self.classes:
             class_level = self.classes[cls].at(self.levels[cls])
 
+            print(class_level.__dict__)
+
             # For every spell-level you can cast
             #
             for spell_level in class_level.spd:
 
                 spell_count = int(class_level.spd[spell_level])
-                #print(spell_count)
+
                 for x in range(0, spell_count):
 
                     # Add that many spells
@@ -274,8 +333,6 @@ class CharacterModel(Model):
 
     def add_spell_slot(self, **kwargs):
 
-        #print(kwargs['cls'].__dict__)
-
         casting_stat = kwargs['cls'].casting_stat
         if int(kwargs['level']) + 10 > self.stats[casting_stat]:
             return False
@@ -286,8 +343,6 @@ class CharacterModel(Model):
         self._spell_slots.append(
             SpellSlot(**kwargs)
         )
-
-        print('Adding spell slot for ' + kwargs['reason'])
 
         return True
 
@@ -326,63 +381,3 @@ class CharacterModel(Model):
         return self._getClassValue('baseAttack')
 
 
-    """
-    possibleSlots = [
-        SpellSlotModel(
-            'Wizard gets 3 0-level spells at 1st level (1)',
-            lambda character: character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 0,
-        ),
-        SpellSlotModel(
-            'Wizard gets 3 0-level spells at 1st level (2)',
-            lambda character: character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 0,
-        ),
-        SpellSlotModel(
-            'Wizard gets 3 0-level spells at 1st level (3)',
-            lambda character: character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 0,
-        ),
-        SpellSlotModel(
-            'Wizard gets 2 1-level spells at 1st level (1)',
-            lambda character: character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 1,
-        ),
-        SpellSlotModel(
-            'Wizard gets 2 1-level spells at 1st level (2)',
-            lambda character: character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 1,
-        ),
-        SpellSlotModel(
-            'Wizard gets 1 0-level spells at 2nd level',
-            lambda character: character.levels['wizard'] > 1,
-            lambda spell: spell.levels['wizard'] <= 0,
-        ),
-        SpellSlotModel(
-            'Wizard gets 1 1-level spells at 2nd level',
-            lambda character: character.levels['wizard'] > 1,
-            lambda spell: spell.levels['wizard'] <= 1,
-        ),
-        SpellSlotModel(
-            'Wizard with at least INT 12 gets an additional 1st level spell',
-            lambda character: character.stats['int'] > 12 and character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 1,
-        ),
-        SpellSlotModel(
-            'Wizard with at least INT 14 gets an additional 2nd level spell',
-            lambda character: character.stats['int'] > 14 and character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 2,
-        ),
-        SpellSlotModel(
-            'Wizard with at least INT 16 gets an additional 3rd level spell',
-            lambda character: character.stats['int'] > 16 and character.levels['wizard'] > 0,
-            lambda spell: spell.levels['wizard'] == 3,
-        ),
-        SpellSlotModel(
-            'Wizard specialization for Illusion grants a 1st level Illusion spell (1)',
-            lambda character: character.school_specialization == 'illusion' and character.levels['wizard'] > 1,
-            lambda spell: spell.levels['wizard'] == 1 and spell.school == 'illusion',
-        ),
-    ]
-
-    """
