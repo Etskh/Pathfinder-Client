@@ -206,8 +206,9 @@ class CharacterDetailView(GridLayout, Screen):
         #self.add_widget(Label(text='Todo: Ongoing effects'))
 
         # Other screens
-        self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
-        self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
+        if len(self.character.spells_known) > 0:
+            self.add_widget(CharacterScreenChanger(DailySpellsView, self.page_callback))
+            self.add_widget(CharacterScreenChanger(SpellsKnownListView, self.page_callback))
 
 
 
